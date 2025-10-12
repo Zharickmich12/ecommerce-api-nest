@@ -1,51 +1,46 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
-import { IUser, IProducts } from 'src/interfaces';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { CreateUserDTO } from 'src/dto/create-user.dto';
+import { UpdateUserDTO } from 'src/dto/update-user.dto';
+import { User } from 'src/entities/user.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class UsersService {
-    
-    private users: IUser[] = [
-        { id: 1, name: 'Elena', email: 'elena@gmail.com', password: '123' },
-        { id: 2, name: 'Jefferson', email: 'pulido@gmail.com', password: 'asd123', age: 23 }
-    ]
 
-    findAll(): IUser[] {
-        return this.users
+    constructor(
+        @InjectRepository(User)
+        private usersRepo: Repository<User>
+    ) { }
+
+    findAll() {
+        return this.usersRepo.find();
     }
 
-    findOne(id: number): IUser {
-        const userFind = this.users.find((user) => user.id === id)
+    /**
+     * findOne: Method to find unique register to user repository
+     * @typeParam id - { String } - Id for recognize user
+     * @returns IUser - Unique register
+     */
+
+    async findOne(id: number) {
+        const userFind = await this.usersRepo.findOne({ where: { id } })
         if (!userFind) throw new NotFoundException('Usuario no encontrado')
         return userFind
     }
 
-    create(user: Omit<IUser, 'id'>): IUser {
-        const newId = this.users.length > 0
-            ? this.users[this.users.length - 1].id + 1
-            : 1;
-
-        if (user.age && user.age >= 18) {
-            const newUser: IUser = {
-                id: newId, ...user
-            };
-    
-            this.users.push(newUser);
-            return newUser;
-        }
-
-        throw new BadRequestException('El usuario debe ser mayor de edad')
-
+    create(newUser: CreateUserDTO) {
+        const userCreated = this.usersRepo.create(newUser);
+        return this.usersRepo.save(userCreated);
     }
 
-    update(id: number, newUser: Omit<IUser, 'id'>): IUser {
-        const user = this.findOne(id);
-        Object.assign(user, newUser);
-        return user;
+    async update(id: number, updateUser: UpdateUserDTO) {
+        
     }
 
-    remove(id: number) {
-        const user = this.users.findIndex((user) => user.id === id);
-        this.users.splice(user, 1)
-        return { delete: true }
+    async remove(id: number) {
+        const result = await this.usersRepo.delete(id)
+        if (result.affected === 0) throw new NotFoundException(`Usuario con id ${id} no encontrado`)
+        return { message: `El usuario con id ${id} fue eliminado correctamente` }
     }
 }
