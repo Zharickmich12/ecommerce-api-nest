@@ -1,22 +1,22 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class Product {
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column({ nullable: false })
-    name: string;
+  @Column({ unique: true })
+  name: string;
 
-    @Column({ nullable: false })
-    description: string;
+  @Column()
+  description: string;
 
-    @Column({ nullable: false })
-    price: number;
+  @Column('decimal', { precision: 10, scale: 2 })
+  price: number;
 
-    @Column({ nullable: false })
-    stock: number;
+  @Column({ default: true })
+  status: boolean;
 
-    @Column({ nullable: false, default: true })
-    status: boolean;
+  @Column({ nullable: true })
+  category: string;
 }
