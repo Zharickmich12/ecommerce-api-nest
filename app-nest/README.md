@@ -32,7 +32,6 @@ http://localhost:3000
 
 ## Scripts útiles
 
-Comando Descripción
 npm run start Inicia la app en modo producción
 npm run start:dev Inicia en modo desarrollo con recarga automática
 
