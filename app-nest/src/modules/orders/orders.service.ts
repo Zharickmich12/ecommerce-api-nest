@@ -13,6 +13,13 @@ export class OrdersService {
     @InjectRepository(Product) private productsRepo: Repository<Product>,
   ) {}
 
+  /**
+   * create: Método para crear una nueva orden.
+   * @param userId - {number} - ID del usuario que realiza la orden
+   * @param productIds - {number[]} - Array con los IDs de los productos a incluir
+   * @returns {Order} - Retorna la orden creada con los productos y total calculado
+   * @throws NotFoundException si el usuario no existe o los productos no son válidos
+   */
   async create(userId: number, productIds: number[]) {
     const user = await this.usersRepo.findOne({ where: { id: userId } });
     if (!user) throw new NotFoundException('Usuario no encontrado');
@@ -26,10 +33,19 @@ export class OrdersService {
     return this.ordersRepo.save(order);
   }
 
+  /**
+   * findAll: Método para obtener todas las órdenes registradas.
+   * @returns {Order[]} - Retorna un array con todas las órdenes, incluyendo usuario y productos
+   */
   findAll() {
     return this.ordersRepo.find({ relations: ['user', 'products'] });
   }
 
+  /**
+   * findOne: Método para obtener una orden específica por su ID.
+   * @param id - {number} - ID de la orden a consultar
+   * @returns {Order} - Retorna la orden correspondiente incluyendo usuario y productos
+   */
   findOne(id: number) {
     return this.ordersRepo.findOne({ where: { id }, relations: ['user', 'products'] });
   }

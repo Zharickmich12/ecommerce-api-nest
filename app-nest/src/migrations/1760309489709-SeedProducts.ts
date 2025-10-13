@@ -3,6 +3,16 @@ import { MigrationInterface, QueryRunner } from "typeorm";
 export class SeedProducts1760309489709 implements MigrationInterface {
     name = 'SeedProducts1760309489709'
 
+    /**
+     * Método up: Se ejecuta al aplicar la migración
+     * Inserta productos de ejemplo en la tabla `product`.
+     * Cada producto contiene:
+     * - name: nombre del producto
+     * - description: descripción detallada del producto
+     * - price: precio del producto
+     * - category: categoría a la que pertenece
+     * @param queryRunner - Objeto que permite ejecutar queries en la base de datos
+     */
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`
             INSERT INTO product (name, description, price, category)
@@ -15,6 +25,11 @@ export class SeedProducts1760309489709 implements MigrationInterface {
         `);
     }
 
+    /**
+     * Método down: Se ejecuta al revertir la migración
+     * Elimina los productos insertados previamente en la tabla `product`.
+     * @param queryRunner - Objeto que permite ejecutar queries en la base de datos
+     */
     public async down(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`
             DELETE FROM product 
